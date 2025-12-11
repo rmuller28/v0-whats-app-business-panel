@@ -1,0 +1,169 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  metaAccounts  MetaAccount[]
+  webhookLogs   WebhookLog[]
+  sentMessages  SentMessage[]
+
+  @@map("users")
+}
+
+model MetaAccount {
+  id                  String   @id @default(cuid())
+  userId              String
+  businessAccountId   String
+  accessToken         String
+  refreshToken        String?
+  tokenExpiresAt      DateTime?
+  businessName        String?
+  verificationStatus  String   @default("UNVERIFIED")
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  apps              MetaApp[]
+  wabas             WABA[]
+  phones            PhoneNumber[]
+  templates         Template[]
+  sentMessages      SentMessage[]
+
+  @@map("meta_accounts")
+}
+
+model MetaApp {
+  id              String   @id @default(cuid())
+  metaAccountId   String
+  appId           String
+  appName         String
+  appSecret       String
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  metaAccount     MetaAccount @relation(fields: [metaAccountId], references: [id], onDelete: Cascade)
+
+  @@map("meta_apps")
+}
+
+model WABA {
+  id                String   @id @default(cuid())
+  metaAccountId     String
+  wabaId            String   @unique
+  displayName       String?
+  statusCallback    String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  metaAccount     MetaAccount @relation(fields: [metaAccountId], references: [id], onDelete: Cascade)
+  phones          PhoneNumber[]
+  sentMessages    SentMessage[]
+
+  @@map("wabas")
+}
+
+model PhoneNumber {
+  id                  String   @id @default(cuid())
+  metaAccountId       String
+  wabaId              String
+  phoneNumberId       String   @unique
+  phoneNumber         String   @unique
+  displayName         String?
+  qualityRating       String?
+  verificationStatus  String   @default("UNVERIFIED")
+  certId              String?
+  nameStatus          String?
+  rejectionReason     String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  metaAccount     MetaAccount @relation(fields: [metaAccountId], references: [id], onDelete: Cascade)
+  waba            WABA        @relation(fields: [wabaId], references: [id], onDelete: Cascade)
+  sentMessages    SentMessage[]
+  templates       Template[]
+
+  @@map("phone_numbers")
+}
+
+model Template {
+  id              String   @id @default(cuid())
+  metaAccountId   String
+  phoneNumberId   String
+  templateId      String   @unique
+  name            String
+  language        String   @default("en")
+  category        String?
+  status          String   @default("PENDING_APPROVAL")
+  content         String   // JSON content of template
+  headerType      String?  // TEXT, IMAGE, VIDEO, DOCUMENT
+  headerUrl       String?
+  footerText      String?
+  buttons         String?  // JSON array of buttons
+  rejectionReason String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  metaAccount     MetaAccount @relation(fields: [metaAccountId], references: [id], onDelete: Cascade)
+  phoneNumber     PhoneNumber @relation(fields: [phoneNumberId], references: [id], onDelete: Cascade)
+
+  @@map("templates")
+}
+
+model SentMessage {
+  id              String   @id @default(cuid())
+  userId          String
+  metaAccountId   String
+  wabaId          String
+  phoneNumberId   String
+  recipientPhone  String
+  messageType     String   // text, image, audio, video, document, template, list, buttons
+  content         String
+  status          String   @default("SENT")
+  whatsappMsgId   String?
+  templateName    String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  metaAccount     MetaAccount @relation(fields: [metaAccountId], references: [id], onDelete: Cascade)
+  waba            WABA        @relation(fields: [wabaId], references: [id], onDelete: Cascade)
+  phoneNumber     PhoneNumber @relation(fields: [phoneNumberId], references: [id], onDelete: Cascade)
+
+  @@map("sent_messages")
+}
+
+model WebhookLog {
+  id              String   @id @default(cuid())
+  userId          String
+  event           String
+  messageData     String   // JSON
+  status          String   @default("RECEIVED")
+  processedAt     DateTime?
+  
+  createdAt DateTime @default(now())
+
+  user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("webhook_logs")
+}

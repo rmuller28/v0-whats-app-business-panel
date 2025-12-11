@@ -1,0 +1,26 @@
+{
+  "name": "whatsapp-business-frontend",
+  "version": "1.0.0",
+  "description": "WhatsApp Business Management Dashboard",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^3.3.10",
+    "vue-router": "^4.2.5",
+    "pinia": "^2.1.6",
+    "axios": "^1.6.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.0",
+    "vite": "^5.0.7",
+    "typescript": "^5.3.3",
+    "@vue/test-utils": "^2.4.1",
+    "tailwindcss": "^3.3.6",
+    "postcss": "^8.4.32",
+    "autoprefixer": "^10.4.16"
+  }
+}
