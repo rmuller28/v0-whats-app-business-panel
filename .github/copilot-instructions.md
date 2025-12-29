@@ -1,0 +1,11 @@
+- Apontar possíveis bugs e edge cases
+- Sugerir melhorias de performance
+- Evitar código duplicado
+- Seguir boas práticas da linguagem
+- Manter código legível e bem comentado
+- Sugerir refatoração quando necessário
+- Validar entradas do usuário
+- Verificar tratamento de erros async/await
+- Sugerir uso correto de middlewares
+- Evitar lógica no controller
+- Conferir uso adequado de status HTTP
