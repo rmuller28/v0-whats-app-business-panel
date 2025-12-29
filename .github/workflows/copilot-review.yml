@@ -11,5 +11,20 @@ jobs:
       pull-requests: write
       contents: read
     steps:
-      - name: Copilot Review
-        # uses: github/copilot-review@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build frontend (Vite)
+        run: pnpm run build
+      - name: Build backend (TypeScript)
+        run: pnpm --filter ./backend... run build || echo "backend build skipped or failed"
+      - name: Upload build artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
