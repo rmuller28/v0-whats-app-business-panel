@@ -12,5 +12,5 @@ jobs:
       contents: read
     steps:
       - name: Copilot Review
-        uses: github/copilot-review@v1
+      # uses: github/copilot-review@v1  # Action currently not found/commented out to avoid failure
   
