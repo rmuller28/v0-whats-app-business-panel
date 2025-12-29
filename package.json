@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "cd frontend && pnpm run dev",
     "build": "cd frontend && pnpm run build",
+    "build:frontend": "cd frontend && pnpm run build",
+    "build:backend": "cd backend && pnpm run build",
+    "build:all": "cd frontend && pnpm run build && cd ../backend && pnpm run build",
     "start": "cd backend && pnpm run start",
     "lint": "eslint ."
   },
